@@ -1,5 +1,7 @@
 {{ form(form) }}
 {{ dump(messages) }}
 
-{% for messages in messages %}
+{% for message in messages %}
+    {{ message.userId.pseudo }}
+    {{ message.message }}
 {% endfor %}

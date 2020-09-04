@@ -20,7 +20,7 @@ class GlobalMessageController extends AbstractController
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
         $message = new MGlobal();
-        $message->setUserId($user->getId());
+        $message->setUserId($user);
         $form = $this->createForm(GeneralMessageType::class, $message);
         
         $form->handleRequest($request);
@@ -38,7 +38,7 @@ class GlobalMessageController extends AbstractController
     }
 
         $repository = $this->getDoctrine()->getRepository(MGlobal::class);
-        $messages = $repository->FindAllComment();
+        $messages = $repository->findAll();
         
         return $this->render('global_message/index.html.twig', [
             'controller_name' => 'GlobalMessageController',

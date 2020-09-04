@@ -27,9 +27,9 @@ class MGlobalRepository extends ServiceEntityRepository
         $entityManager = $this->getEntityManager();
 
         $query = $entityManager->createQuery(
-            'SELECT m
-            FROM App\Entity\MGlobal m
-            CROSS JOIN App\Entity\User u
+            'SELECT m, u
+            FROM App\Entity\MGlobal m, App\Entity\User u
+            JOIN m.message ON u.id = m.userId
             ');
 
         // returns an array of Product objects
