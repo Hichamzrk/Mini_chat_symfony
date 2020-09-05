@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Aime;
 use App\Entity\User;
 use App\Entity\MGlobal;
 use Doctrine\Persistence\ManagerRegistry;
@@ -24,17 +25,11 @@ class MGlobalRepository extends ServiceEntityRepository
     */
     public function FindAllComment()
     {
-        $entityManager = $this->getEntityManager();
-
-        $query = $entityManager->createQuery(
-            'SELECT m, u
-            FROM App\Entity\MGlobal m, App\Entity\User u
-            JOIN m.message ON u.id = m.userId
-            ');
-
-        // returns an array of Product objects
-        return $query->getResult();
-  
+        return $this->createQueryBuilder('m')
+        ->addSelect('a.id')
+        ->leftJoin(Aime::class, 'a', 'WITH', 'a.mGlobal = m.id')
+        ->getQuery()
+        ->getResult();
     }
     // /**
     //  * @return MGlobal[] Returns an array of MGlobal objects

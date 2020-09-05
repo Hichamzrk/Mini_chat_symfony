@@ -1,7 +1,15 @@
 {{ form(form) }}
-{{ dump(messages) }}
 
 {% for message in messages %}
-    {{ message.userId.pseudo }}
-    {{ message.message }}
+    <br>
+    <h2>{{ message.userid.avatar }}</h2>
+    <h2>{{ message.userid.pseudo }}</h2>
+    <h3> {{ message.message }} </h3> 
+   <p> likes : {{ message.Aime | length }} </p>
+    <a href="{{ path('Aime', {message: message.id}) }}">Like</a>
+    <a href="{{ path('private_message', {destinate_id: message.userid.id}) }}">private</a>
 {% endfor %}
+
+{{ dump(messages) }}
+
+

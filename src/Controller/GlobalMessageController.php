@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Aime;
 use App\Entity\MGlobal;
 use App\Form\GeneralMessageType;
 use App\Repository\MGlobalRepository;
@@ -46,4 +47,35 @@ class GlobalMessageController extends AbstractController
             'messages' => $messages
         ]);
     }
+
+    /**
+      * @Route("/Minichat/Aime/{message}", name="Aime")
+      */
+    public function Aime(UserInterface $user, ?MGlobal $message)
+    {
+        $repository = $this->getDoctrine()->getRepository(Aime::class);
+        $messages = $repository->findOneBy([
+            'userId' => $user,
+            'mGlobal' => $message
+        ]);
+        
+        if ($messages !== null) {
+            return $this->redirectToRoute('global_message');
+            die();
+        }
+        
+
+        $aime = new Aime();
+        $aime->setUserId($user);
+        $aime->setMessageIdId($message);
+        $aime->setMGlobal($message);
+
+        
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($aime);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('global_message');
+    }
+    
 }

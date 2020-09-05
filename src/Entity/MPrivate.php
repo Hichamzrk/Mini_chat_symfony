@@ -20,11 +20,6 @@ class MPrivate
     /**
      * @ORM\Column(type="integer")
      */
-    private $userId;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
     private $receiverId;
 
     /**
@@ -32,21 +27,14 @@ class MPrivate
      */
     private $message;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="mPrivates")
+     */
+    private $userId;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUserId(): ?int
-    {
-        return $this->userId;
-    }
-
-    public function setUserId(int $userId): self
-    {
-        $this->userId = $userId;
-
-        return $this;
     }
 
     public function getReceiverId(): ?int
@@ -69,6 +57,18 @@ class MPrivate
     public function setMessage(string $message): self
     {
         $this->message = $message;
+
+        return $this;
+    }
+
+    public function getUserId(): ?User
+    {
+        return $this->userId;
+    }
+
+    public function setUserId(?User $userId): self
+    {
+        $this->userId = $userId;
 
         return $this;
     }

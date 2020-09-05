@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -40,6 +42,22 @@ class User implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     private $avatar;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Aime::class, mappedBy="userId")
+     */
+    private $aimes;
+
+    /**
+     * @ORM\OneToMany(targetEntity=MPrivate::class, mappedBy="userId")
+     */
+    private $mPrivates;
+
+    public function __construct()
+    {
+        $this->aimes = new ArrayCollection();
+        $this->mPrivates = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -127,6 +145,68 @@ class User implements UserInterface
     public function setAvatar(string $avatar): self
     {
         $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Aime[]
+     */
+    public function getAimes(): Collection
+    {
+        return $this->aimes;
+    }
+
+    public function addAime(Aime $aime): self
+    {
+        if (!$this->aimes->contains($aime)) {
+            $this->aimes[] = $aime;
+            $aime->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAime(Aime $aime): self
+    {
+        if ($this->aimes->contains($aime)) {
+            $this->aimes->removeElement($aime);
+            // set the owning side to null (unless already changed)
+            if ($aime->getUserId() === $this) {
+                $aime->setUserId(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MPrivate[]
+     */
+    public function getMPrivates(): Collection
+    {
+        return $this->mPrivates;
+    }
+
+    public function addMPrivate(MPrivate $mPrivate): self
+    {
+        if (!$this->mPrivates->contains($mPrivate)) {
+            $this->mPrivates[] = $mPrivate;
+            $mPrivate->setUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMPrivate(MPrivate $mPrivate): self
+    {
+        if ($this->mPrivates->contains($mPrivate)) {
+            $this->mPrivates->removeElement($mPrivate);
+            // set the owning side to null (unless already changed)
+            if ($mPrivate->getUserId() === $this) {
+                $mPrivate->setUserId(null);
+            }
+        }
 
         return $this;
     }
