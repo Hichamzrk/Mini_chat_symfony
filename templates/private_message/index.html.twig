@@ -1,2 +1,8 @@
-
-{{ dump(mPrivate)}}
+{{ form(form)}}
+{% for message in messages %}
+    <br>
+    <h2>{{ message.userid.avatar }}</h2>
+    <h2>{{ message.userid.pseudo }}</h2>
+    <h3> {{ message.message }} </h3> 
+{% endfor %}
+{{ dump(messages) }}

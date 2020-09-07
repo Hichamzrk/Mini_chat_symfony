@@ -18,26 +18,27 @@ class GlobalMessageController extends AbstractController
      */
     public function index(UserInterface $user, Request $request)
     {
+        //User logged or not 
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
+        //Set userId
         $message = new MGlobal();
         $message->setUserId($user);
-        $form = $this->createForm(GeneralMessageType::class, $message);
         
+        //GeneralMessage Form 
+        $form = $this->createForm(GeneralMessageType::class, $message);
         $form->handleRequest($request);
    
         if ($form->isSubmitted() && $form->isValid()) {
-        // $form->getData() holds the submitted values
-        // but, the original `$task` variable has also been updated
+
         $task = $form->getData();
-
-        // ... perform some action, such as saving the task to the database
-        // for example, if Task is a Doctrine entity, save it!
-         $entityManager = $this->getDoctrine()->getManager();
-         $entityManager->persist($task);
-         $entityManager->flush();
+        
+        //Create data in database
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($task);
+        $entityManager->flush();
     }
-
+        //Find All GlobalMessage
         $repository = $this->getDoctrine()->getRepository(MGlobal::class);
         $messages = $repository->findAll();
         
@@ -53,24 +54,26 @@ class GlobalMessageController extends AbstractController
       */
     public function Aime(UserInterface $user, ?MGlobal $message)
     {
+        //Find Aime in database
         $repository = $this->getDoctrine()->getRepository(Aime::class);
         $messages = $repository->findOneBy([
             'userId' => $user,
             'mGlobal' => $message
         ]);
         
+        //Verify if User like the message reditect in minichat and don't like the message
         if ($messages !== null) {
             return $this->redirectToRoute('global_message');
             die();
         }
-        
 
+        //Create Aime object
         $aime = new Aime();
         $aime->setUserId($user);
         $aime->setMessageIdId($message);
         $aime->setMGlobal($message);
 
-        
+        //Create data in database
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($aime);
         $entityManager->flush();

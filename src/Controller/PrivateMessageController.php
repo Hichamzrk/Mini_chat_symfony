@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Entity\MGlobal;
 use App\Entity\MPrivate;
 use App\Form\PrivateMessageType;
@@ -14,47 +15,57 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class PrivateMessageController extends AbstractController
 {
     /**
-     * @Route("/Privatemessage/{destinate_id}", name="private_message")
+     * @Route("/Privatemessage/{receiver_id}", name="private_message")
      */
-    public function index(UserInterface $user, $destinate_id,  Request $request)
+    public function index(UserInterface $user, $receiver_id,  Request $request)
     {
+        //User logged or not
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
+        //Create Mprivate object
         $message = new MPrivate();
         $message->setUserId($user);
+        $message->setReceiverId($receiver_id);
         
+        //PrivateMessage From
         $form = $this->createForm(PrivateMessageType::class, $message);
-        
         $form->handleRequest($request);
    
         if ($form->isSubmitted() && $form->isValid()) {
-        // $form->getData() holds the submitted values
-        // but, the original `$task` variable has also been updated
+        
         $task = $form->getData();
-
-        // ... perform some action, such as saving the task to the database
-        // for example, if Task is a Doctrine entity, save it!
-         $entityManager = $this->getDoctrine()->getManager();
-         $entityManager->persist($task);
-         $entityManager->flush();
+        
+        //Create data in database
+        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager->persist($task);
+        $entityManager->flush();
     }
+        //Find UserMessage in the database
         $repository = $this->getDoctrine()->getRepository(MPrivate::class);
-        $mPrivate = $repository->findBy([
+        $userMessage = $repository->findBy([
             'userId'=> $user,
-            'receiverId' => 1
+            'receiverId' => $receiver_id
         ]);
 
-        $mReceiver = $repository->findBy([
-            'userId'=> $user,
-            'receiverId' => 3
+        //Create user object for find ReceiverMessage
+        $repository = $this->getDoctrine()->getRepository(User::class);
+        $userId = $repository->find($receiver_id);
+        
+        //Find ReceiverMessage in the database
+        $repository = $this->getDoctrine()->getRepository(MPrivate::class);
+        $receiverMessage = $repository->findBy([
+            'userId'=> $userId,
+            'receiverId' => $user->getId()
         ]);
-
-        $mPrivateGeneral = array_merge($mPrivate, $mReceiver);
-
+        
+        //Merge UserMessage, ReceiverMessage and sort that by id Desc 
+        $messages = array_merge($userMessage, $receiverMessage);
+        array_multisort($messages, SORT_DESC);
+        
         return $this->render('private_message/index.html.twig', [
             'controller_name' => 'PrivateMessageController',
-            'destinate_id' => $destinate_id,
-            'mPrivate' =>  $mPrivateGeneral,
+            'messages' =>  $messages,
+            'form' => $form->createView()
         ]);
     }
 }

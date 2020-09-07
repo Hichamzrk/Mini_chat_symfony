@@ -7,9 +7,8 @@
     <h3> {{ message.message }} </h3> 
    <p> likes : {{ message.Aime | length }} </p>
     <a href="{{ path('Aime', {message: message.id}) }}">Like</a>
-    <a href="{{ path('private_message', {destinate_id: message.userid.id}) }}">private</a>
+    <a href="{{ path('private_message', {receiver_id: message.userid.id}) }}">private</a>
 {% endfor %}
 
-{{ dump(messages) }}
 
 
